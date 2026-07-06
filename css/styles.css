@@ -164,9 +164,7 @@ main section[id] { scroll-margin-top: 90px; }
 
 /* ---------- 5. Header ---------- */
 .site-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  /* Sin position sticky: el header se desplaza con la página como un bloque normal. */
   background: var(--navy);
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
@@ -324,14 +322,31 @@ main section[id] { scroll-margin-top: 90px; }
 .breadcrumb a { color: var(--ink-soft); }
 .breadcrumb [aria-current="page"] { color: var(--navy); font-weight: 600; }
 
-/* ---------- 7. Hero ---------- */
+/* ---------- 7. Hero (tarjeta enmarcada) ---------- */
 .hero {
+  /* Tarjeta navy con aire alrededor; el fondo blanco del body queda detrás.
+     margin: arriba = lados (~28px, menos en móvil) · 0 abajo */
+  margin: clamp(0.625rem, 2.2vw, 1.75rem) clamp(0.625rem, 2.2vw, 1.75rem) 0;
+  border-radius: 22px;
+  overflow: hidden; /* recorta el fondo a las esquinas redondeadas */
   background:
     radial-gradient(circle at 15% 20%, var(--teal-12), transparent 45%),
     radial-gradient(circle at 85% 80%, var(--magenta-10), transparent 45%),
     var(--navy);
   color: var(--white);
-  padding-block: clamp(3.5rem, 9vw, 7rem);
+  padding-block: clamp(1.5rem, 3.5vh, 3.5rem); /* basado en el alto: se encoge en pantallas bajas */
+  box-shadow: 0 18px 50px rgba(34, 41, 85, 0.12); /* sombra sutil para profundidad */
+
+  /* Abarca la pantalla contando el header (--header-h lo mide el JS) y el margen
+     superior, sin sobrepasarse. El contenido queda centrado verticalmente. */
+  min-height: calc(100dvh - var(--header-h, 80px) - clamp(0.625rem, 2.2vw, 1.75rem));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+@media (max-width: 640px) {
+  /* margen lateral reducido en móvil para que la tarjeta no quede angosta */
+  .hero { margin: 0.75rem 0.75rem 0; border-radius: 18px; }
 }
 .hero h1 { color: var(--white); max-width: 16ch; }
 .hero__lead { color: rgba(255, 255, 255, 0.9); font-size: 1.35rem; font-family: var(--font-head); font-weight: 500; max-width: 34ch; }

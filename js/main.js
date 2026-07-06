@@ -264,16 +264,31 @@
     }
   }
 
+  /* ---------- 4. Alto del header como variable CSS (--header-h) ---------- */
+  // El hero usa esta medida para abarcar la pantalla sin sobrepasarse.
+  // El header no es sticky y en móvil ocupa dos filas, por eso se mide en vivo.
+  function initHeaderHeightVar() {
+    var header = document.querySelector(".site-header");
+    if (!header) return;
+    function setVar() {
+      document.documentElement.style.setProperty("--header-h", header.offsetHeight + "px");
+    }
+    setVar();
+    window.addEventListener("resize", setVar);
+    window.addEventListener("load", setVar); // reajusta cuando cargan las fuentes
+    if (window.ResizeObserver) new ResizeObserver(setVar).observe(header);
+  }
+
   /* ---------- Init ---------- */
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", function () {
-      initGlobalMenu();
-      initFaq();
-      initContactModal();
-    });
-  } else {
+  function init() {
+    initHeaderHeightVar();
     initGlobalMenu();
     initFaq();
     initContactModal();
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
   }
 })();
