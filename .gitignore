@@ -1,0 +1,14 @@
+# Archivos basura de macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Basura de otros SO / editores
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Dependencias (por si acaso en la raíz)
+node_modules/
