@@ -1,0 +1,546 @@
+/* =====================================================================
+   ResponSable — Estilos globales
+   Agencia de sostenibilidad y RSE
+   ---------------------------------------------------------------------
+   Este archivo se reutiliza en TODAS las páginas. No incluye copy ni
+   nada específico de un servicio: solo el sistema de diseño de marca.
+   ===================================================================== */
+
+/* ---------- 1. Variables de marca ---------- */
+:root {
+  /* Paleta */
+  --navy: #1C2367;
+  --magenta: #DC1767;
+  --teal: #17b3a3;
+  --off-white: #f7f7fb;
+  --white: #ffffff;
+
+  /* Tonos derivados (para fondos, bordes y estados) */
+  --navy-90: rgba(28, 35, 103, 0.9);
+  --navy-08: rgba(28, 35, 103, 0.08);
+  --navy-04: rgba(28, 35, 103, 0.04);
+  --magenta-10: rgba(220, 23, 103, 0.1);
+  --teal-12: rgba(23, 179, 163, 0.12);
+
+  --ink: #1a1c2e;          /* texto principal */
+  --ink-soft: #4a4d63;     /* texto secundario */
+  --border: #e5e6ef;
+
+  /* Tipografía */
+  --font-head: "Poppins", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Layout */
+  --container: 1120px;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 12px 40px rgba(28, 35, 103, 0.1);
+  --shadow-sm: 0 4px 16px rgba(28, 35, 103, 0.08);
+
+  /* Espaciado vertical de secciones */
+  --section-y: clamp(3.5rem, 8vw, 6.5rem);
+}
+
+/* ---------- 2. Reset ligero ---------- */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--white);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+a { color: var(--magenta); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+h1, h2, h3, h4 {
+  font-family: var(--font-head);
+  color: var(--navy);
+  line-height: 1.2;
+  margin: 0 0 0.5em;
+  font-weight: 600;
+}
+
+h1 { font-size: clamp(2rem, 5vw, 3.2rem); }
+h2 { font-size: clamp(1.6rem, 3.5vw, 2.4rem); }
+h3 { font-size: clamp(1.15rem, 2vw, 1.4rem); }
+
+p { margin: 0 0 1rem; }
+
+ul, ol { margin: 0 0 1rem; padding-left: 1.25rem; }
+
+/* ---------- 3. Utilidades ---------- */
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 2rem);
+}
+
+.section { padding-block: var(--section-y); }
+.section--tint { background: var(--off-white); }
+
+.eyebrow {
+  font-family: var(--font-head);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--teal);
+  margin: 0 0 0.75rem;
+}
+
+.lead { font-size: 1.15rem; color: var(--ink-soft); max-width: 60ch; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap; border: 0;
+}
+
+/* Foco visible por teclado en todos los elementos interactivos */
+:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Enlace de salto para accesibilidad */
+.skip-link {
+  position: absolute;
+  left: 1rem; top: -100px;
+  background: var(--navy);
+  color: var(--white);
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-sm);
+  z-index: 200;
+  transition: top 0.2s ease;
+}
+.skip-link:focus { top: 1rem; text-decoration: none; }
+
+/* ---------- 4. Botones ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.85rem 1.6rem;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.btn:hover { text-decoration: none; transform: translateY(-2px); }
+
+.btn--primary { background: var(--magenta); color: var(--white); }
+.btn--primary:hover { background: #c01159; }
+
+.btn--ghost {
+  background: transparent;
+  color: var(--navy);
+  border-color: var(--navy);
+}
+.btn--ghost:hover { background: var(--navy); color: var(--white); }
+
+.btn--light { background: var(--white); color: var(--navy); }
+.btn--light:hover { background: var(--off-white); }
+
+/* ---------- 5. Header / Nav ---------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+}
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 72px;
+}
+.brand {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 1.35rem;
+  color: var(--navy);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.brand:hover { text-decoration: none; }
+.brand strong { color: var(--magenta); font-weight: 700; }
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+}
+.nav__list {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.nav__link {
+  color: var(--navy);
+  font-weight: 500;
+  font-family: var(--font-head);
+  font-size: 0.98rem;
+}
+.nav__link:hover { color: var(--magenta); text-decoration: none; }
+
+/* Botón hamburguesa (visible solo en móvil) */
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 44px; height: 44px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.nav-toggle span {
+  display: block;
+  width: 22px; height: 2px;
+  background: var(--navy);
+  margin-inline: auto;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+@media (max-width: 860px) {
+  .nav-toggle { display: flex; }
+  .nav {
+    position: absolute;
+    top: 72px; left: 0; right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 0.5rem 1rem 1.25rem;
+    /* Oculto por defecto en móvil */
+    display: none;
+  }
+  .nav.is-open { display: flex; }
+  .nav__list {
+    flex-direction: column;
+    gap: 0;
+  }
+  .nav__link {
+    display: block;
+    padding: 0.85rem 0.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .nav .btn { margin-top: 1rem; justify-content: center; }
+}
+
+/* ---------- 6. Breadcrumb ---------- */
+.breadcrumb {
+  background: var(--off-white);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+.breadcrumb__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0;
+  padding-block: 0.85rem;
+}
+.breadcrumb__list li::after {
+  content: "›";
+  margin-left: 0.4rem;
+  color: var(--ink-soft);
+}
+.breadcrumb__list li:last-child::after { content: ""; }
+.breadcrumb a { color: var(--ink-soft); }
+.breadcrumb [aria-current="page"] { color: var(--navy); font-weight: 600; }
+
+/* ---------- 7. Hero ---------- */
+.hero {
+  background:
+    radial-gradient(circle at 15% 20%, var(--teal-12), transparent 45%),
+    radial-gradient(circle at 85% 80%, var(--magenta-10), transparent 45%),
+    var(--navy);
+  color: var(--white);
+  padding-block: clamp(3.5rem, 9vw, 7rem);
+}
+.hero h1 { color: var(--white); max-width: 16ch; }
+.hero__lead { color: rgba(255, 255, 255, 0.85); font-size: 1.2rem; max-width: 55ch; }
+.hero__actions { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; }
+
+/* ---------- 8. Intro con ilustración ---------- */
+.intro__grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+}
+.intro__media img {
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+@media (max-width: 780px) {
+  .intro__grid { grid-template-columns: 1fr; }
+}
+
+/* ---------- 9. Temas materiales + diagrama ---------- */
+.materiality__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-top: 2.5rem;
+}
+.material-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+.material-card h3 { margin-top: 0.25rem; }
+.material-card .tag {
+  display: inline-block;
+  font-family: var(--font-head);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: var(--teal-12);
+  color: var(--teal);
+}
+.diagram {
+  margin-top: 2.5rem;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+
+/* ---------- 10. Proceso de 4 pasos ---------- */
+.steps {
+  list-style: none;
+  counter-reset: step;
+  padding: 0;
+  margin: 2.5rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+.steps li {
+  counter-increment: step;
+  position: relative;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2.75rem 1.5rem 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+.steps li::before {
+  content: counter(step);
+  position: absolute;
+  top: 1.25rem; left: 1.5rem;
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  font-family: var(--font-head);
+  font-weight: 700;
+  color: var(--white);
+  background: var(--magenta);
+  border-radius: 50%;
+}
+.steps h3 { margin: 0.25rem 0 0.5rem; }
+.steps p { margin: 0; color: var(--ink-soft); font-size: 0.96rem; }
+
+/* ---------- 11. FAQ acordeón ---------- */
+.faq { max-width: 780px; margin-inline: auto; }
+.faq__item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  margin-bottom: 0.85rem;
+  overflow: hidden;
+}
+.faq__question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  text-align: left;
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--navy);
+  background: transparent;
+  border: 0;
+  padding: 1.15rem 1.35rem;
+  cursor: pointer;
+}
+.faq__question:hover { color: var(--magenta); }
+.faq__icon {
+  flex: none;
+  width: 22px; height: 22px;
+  position: relative;
+  transition: transform 0.25s ease;
+}
+.faq__icon::before,
+.faq__icon::after {
+  content: "";
+  position: absolute;
+  background: currentColor;
+  border-radius: 2px;
+}
+.faq__icon::before { top: 10px; left: 0; width: 22px; height: 2px; }
+.faq__icon::after { left: 10px; top: 0; width: 2px; height: 22px; }
+.faq__question[aria-expanded="true"] .faq__icon { transform: rotate(45deg); }
+
+.faq__answer {
+  /* Colapsable con grid para animar sin JS de medición */
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.28s ease;
+}
+.faq__answer[hidden] { display: none; } /* fallback sin CSS grid */
+.faq__question[aria-expanded="true"] + .faq__answer { grid-template-rows: 1fr; }
+.faq__answer > div { overflow: hidden; }
+.faq__answer p {
+  padding: 0 1.35rem 1.25rem;
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+/* ---------- 12. Banda CTA ---------- */
+.cta-band {
+  background: linear-gradient(120deg, var(--navy), #2a3390);
+  color: var(--white);
+  border-radius: var(--radius);
+  padding: clamp(2.25rem, 5vw, 3.5rem);
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+.cta-band h2 { color: var(--white); }
+.cta-band p { color: rgba(255, 255, 255, 0.85); max-width: 55ch; margin-inline: auto; }
+.cta-band .btn { margin-top: 1.5rem; }
+
+/* ---------- 13. Servicios relacionados ---------- */
+.related__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+.related-card {
+  display: block;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  color: var(--ink);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.related-card:hover {
+  text-decoration: none;
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+}
+.related-card h3 { margin-top: 0; }
+.related-card p { color: var(--ink-soft); margin-bottom: 0; }
+.related-card .arrow { color: var(--magenta); font-weight: 600; font-family: var(--font-head); }
+
+/* ---------- 14. Newsletter ---------- */
+.newsletter {
+  background: var(--navy);
+  color: var(--white);
+}
+.newsletter h2 { color: var(--white); }
+.newsletter p { color: rgba(255, 255, 255, 0.8); }
+.newsletter__form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  max-width: 520px;
+}
+.newsletter__form input[type="email"] {
+  flex: 1 1 240px;
+  padding: 0.85rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-family: var(--font-body);
+  font-size: 1rem;
+}
+.newsletter__note { font-size: 0.82rem; margin-top: 0.85rem; color: rgba(255,255,255,0.6); }
+
+/* ---------- 15. Footer ---------- */
+.site-footer {
+  background: #12163f;
+  color: rgba(255, 255, 255, 0.75);
+  padding-block: clamp(2.5rem, 6vw, 4rem);
+  font-size: 0.95rem;
+}
+.site-footer a { color: rgba(255, 255, 255, 0.75); }
+.site-footer a:hover { color: var(--white); }
+.footer__grid {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(3, 1fr);
+  gap: 2rem;
+}
+.footer__brand { color: var(--white); font-family: var(--font-head); font-weight: 700; font-size: 1.25rem; }
+.footer__col h4 { color: var(--white); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.footer__col ul { list-style: none; padding: 0; margin: 0; }
+.footer__col li { margin-bottom: 0.6rem; }
+.footer__bottom {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.85rem;
+}
+@media (max-width: 780px) {
+  .footer__grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px) {
+  .footer__grid { grid-template-columns: 1fr; }
+}
+
+/* ---------- 16. Movimiento reducido ---------- */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
