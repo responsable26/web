@@ -161,6 +161,9 @@ main section[id] { scroll-margin-top: 90px; }
 
 .btn--light { background: var(--white); color: var(--navy); }
 .btn--light:hover { background: var(--off-white); }
+/* Botón oscuro: navy sobre fondos claros/de marca (p. ej. la franja CTA rosa) */
+.btn--dark { background: var(--navy); color: var(--white); }
+.btn--dark:hover { background: #1a2043; }
 
 /* ---------- 5. Header ---------- */
 .site-header {
@@ -322,35 +325,74 @@ main section[id] { scroll-margin-top: 90px; }
 .breadcrumb a { color: var(--ink-soft); }
 .breadcrumb [aria-current="page"] { color: var(--navy); font-weight: 600; }
 
+/* Variante dentro del hero (fondo navy): texto claro/tenue sobre oscuro,
+   colocado justo encima del título con un pie discreto. */
+.breadcrumb--hero .breadcrumb__list { padding-block: 0 0.9rem; }
+.breadcrumb--hero a { color: rgba(255, 255, 255, 0.75); }
+.breadcrumb--hero a:hover { color: var(--white); }
+.breadcrumb--hero .breadcrumb__list li::after { color: rgba(255, 255, 255, 0.4); }
+.breadcrumb--hero [aria-current="page"] { color: rgba(255, 255, 255, 0.9); font-weight: 600; }
+
 /* ---------- 7. Hero (tarjeta enmarcada) ---------- */
 .hero {
-  /* Tarjeta navy con aire alrededor; el fondo blanco del body queda detrás.
-     margin: arriba = lados (~28px, menos en móvil) · 0 abajo */
-  margin: clamp(0.625rem, 2.2vw, 1.75rem) clamp(0.625rem, 2.2vw, 1.75rem) 0;
+  /* Aire blanco alrededor de la tarjeta, IGUAL en los cuatro lados (incluido
+     abajo) para que no se pegue a la sección siguiente. */
+  --hero-margin: clamp(0.625rem, 2.2vw, 1.75rem);
+  margin: var(--hero-margin);
+  position: relative; /* ancla del video de fondo y el overlay absolutos */
   border-radius: 22px;
-  overflow: hidden; /* recorta el fondo a las esquinas redondeadas */
+  overflow: hidden; /* recorta el fondo (y el video) a las esquinas redondeadas */
   background:
     radial-gradient(circle at 15% 20%, var(--teal-12), transparent 45%),
     radial-gradient(circle at 85% 80%, var(--magenta-10), transparent 45%),
     var(--navy);
   color: var(--white);
-  padding-block: clamp(1.5rem, 3.5vh, 3.5rem); /* basado en el alto: se encoge en pantallas bajas */
+  padding-block: clamp(2.5rem, 5vw, 4rem) clamp(2.5rem, 5vw, 4rem);
   box-shadow: 0 18px 50px rgba(34, 41, 85, 0.12); /* sombra sutil para profundidad */
 
-  /* Abarca la pantalla contando el header (--header-h lo mide el JS) y el margen
-     superior, sin sobrepasarse. El contenido queda centrado verticalmente. */
-  min-height: calc(100dvh - var(--header-h, 80px) - clamp(0.625rem, 2.2vw, 1.75rem));
+  /* La tarjeta llena la ventana inicial SIN sobrepasarla: se resta el header
+     (no es sticky, lo mide el JS en --header-h) y el margen de ARRIBA y de ABAJO.
+     Así  header + margen·2 + tarjeta = una pantalla, dejando aire blanco debajo.
+     Usamos svh (viewport pequeño) para no desbordar con las barras del navegador.
+     El contenido va centrado para que el aire sobrante quede equilibrado. */
+  min-height: calc(100svh - var(--header-h, 73px) - (var(--hero-margin) * 2));
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 @media (max-width: 640px) {
-  /* margen lateral reducido en móvil para que la tarjeta no quede angosta */
-  .hero { margin: 0.75rem 0.75rem 0; border-radius: 18px; }
+  /* margen reducido en móvil (igual en los cuatro lados) para que la tarjeta no
+     quede angosta ni pegada abajo. Se redefine --hero-margin para que el
+     min-height siga cuadrando. */
+  .hero { --hero-margin: 0.75rem; border-radius: 18px; }
 }
-.hero h1 { color: var(--white); max-width: 16ch; }
-.hero__lead { color: rgba(255, 255, 255, 0.9); font-size: 1.35rem; font-family: var(--font-head); font-weight: 500; max-width: 34ch; }
-.hero__text { color: rgba(255, 255, 255, 0.8); font-size: 1.05rem; max-width: 62ch; margin-top: 1.25rem; }
+
+/* --- Capas del hero: video (fondo) · overlay navy · contenido (encima) --- */
+.hero__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* cubre todo el hero sin deformarse */
+  z-index: 0;
+  background: var(--navy); /* navy sólido mientras carga / si falla */
+  pointer-events: none;
+}
+.hero__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  /* navy #222955 semitransparente: deja ver el video pero mantiene el contraste */
+  background: rgba(34, 41, 85, 0.8);
+  pointer-events: none;
+}
+/* El contenido del hero queda por encima del overlay */
+.hero > .container { position: relative; z-index: 2; }
+/* Título en una sola línea en desktop: sin tope de ancho y algo más pequeño.
+   En móvil sigue partiéndose gracias al mínimo del clamp. */
+.hero h1 { color: var(--white); font-size: clamp(2rem, 4vw, 2.75rem); max-width: none; }
+.hero__lead { color: rgba(255, 255, 255, 0.9); font-size: 1.2rem; font-family: var(--font-head); font-weight: 500; max-width: 46ch; }
+.hero__text { color: rgba(255, 255, 255, 0.8); font-size: 1.05rem; max-width: 80ch; margin-top: 1.25rem; }
 .hero__actions { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; }
 
 /* ---------- 8. Intro con ilustración ---------- */
@@ -379,75 +421,69 @@ main section[id] { scroll-margin-top: 90px; }
   .intro__grid { grid-template-columns: 1fr; }
 }
 
-/* ---------- 9. Temas materiales + diagrama ---------- */
-.materiality__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.25rem;
-  margin-top: 2.5rem;
+/* ---------- 10. Proceso (fondo navy · encabezado rosa · tarjeta blanca) ---------- */
+.process {
+  background: var(--navy);
+  color: var(--white);
 }
-.material-card {
+/* Encabezado: bloque superior izquierdo, "Nuestro Proceso" en rosa + intro clara */
+.process__head {
+  max-width: 760px;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+.process__title {
+  color: var(--magenta);
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  line-height: 1.02;
+  margin: 0 0 1.25rem;
+}
+.process__intro {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.05rem;
+  max-width: 62ch;
+  margin: 0;
+}
+/* Contenedor blanco único que agrupa los 4 pasos en columnas */
+.process__card {
   background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1.5rem;
-  box-shadow: var(--shadow-sm);
+  border-radius: 22px;
+  padding: clamp(1.5rem, 3vw, 2.75rem);
+  box-shadow: var(--shadow);
 }
-.material-card h3 { margin-top: 0.25rem; }
-.material-card .tag {
-  display: inline-block;
-  font-family: var(--font-head);
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 0.25rem 0.6rem;
-  border-radius: 999px;
-  background: var(--teal-12);
-  color: var(--teal);
-}
-.diagram {
-  margin-top: 2.5rem;
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: clamp(1.25rem, 4vw, 2.5rem);
-  box-shadow: var(--shadow-sm);
-  overflow-x: auto;
-}
-
-/* ---------- 10. Proceso de 4 pasos ---------- */
 .steps {
   list-style: none;
-  counter-reset: step;
   padding: 0;
-  margin: 2.5rem 0 0;
+  margin: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(1.5rem, 2.5vw, 2.5rem);
 }
-.steps li {
-  counter-increment: step;
-  position: relative;
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 2.75rem 1.5rem 1.5rem;
-  box-shadow: var(--shadow-sm);
+/* En móvil/tablet los pasos se apilan dentro de la tarjeta blanca */
+@media (max-width: 900px) {
+  .steps { grid-template-columns: repeat(2, 1fr); }
 }
-.steps li::before {
-  content: counter(step);
-  position: absolute;
-  top: 1.25rem; left: 1.5rem;
-  width: 40px; height: 40px;
-  display: grid; place-items: center;
+@media (max-width: 560px) {
+  .steps { grid-template-columns: 1fr; }
+}
+.steps__item { margin: 0; }
+/* Número en círculo de color, blanco dentro */
+.steps__num {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
   font-family: var(--font-head);
   font-weight: 700;
+  font-size: 1.1rem;
   color: var(--white);
-  background: var(--magenta);
-  border-radius: 50%;
+  margin-bottom: 1.1rem;
 }
-.steps h3 { margin: 0.25rem 0 0.5rem; }
+.steps__num--1 { background: #F5B301; } /* amarillo */
+.steps__num--2 { background: #17B0A0; } /* teal */
+.steps__num--3 { background: #2F80ED; } /* azul */
+.steps__num--4 { background: #2FB457; } /* verde */
+.steps h3 { color: var(--magenta); margin: 0 0 0.5rem; font-size: 1.15rem; }
 .steps p { margin: 0; color: var(--ink-soft); font-size: 0.96rem; }
 
 /* ---------- 11. FAQ acordeón ---------- */
@@ -508,18 +544,35 @@ main section[id] { scroll-margin-top: 90px; }
   color: var(--ink-soft);
 }
 
-/* ---------- 12. Banda CTA ---------- */
+/* ---------- 12. Banda CTA (tarjeta rosa) ---------- */
+/* Tarjeta rosa con aire lateral y esquinas redondeadas, coherente con el hero.
+   El padding-block de .section hace de padding interno; el contenido se alinea
+   al ancho de contenido vía .container. Texto a la izquierda, botón a la derecha. */
 .cta-band {
-  background: linear-gradient(120deg, var(--navy), #323C78);
+  background: var(--magenta); /* rosa de marca #EA157A */
   color: var(--white);
-  border-radius: var(--radius);
-  padding: clamp(2.25rem, 5vw, 3.5rem);
-  text-align: center;
-  box-shadow: var(--shadow);
+  margin-inline: clamp(0.625rem, 2.2vw, 1.75rem); /* mismo aire lateral que el hero */
+  border-radius: 22px; /* mismas esquinas que el hero */
+  box-shadow: 0 18px 50px rgba(34, 41, 85, 0.12); /* sombra sutil, como el hero */
 }
-.cta-band h2 { color: var(--white); }
-.cta-band p { color: rgba(255, 255, 255, 0.85); max-width: 55ch; margin-inline: auto; }
-.cta-band .btn { margin-top: 1.5rem; }
+@media (max-width: 640px) {
+  /* margen lateral reducido en móvil, manteniendo las esquinas redondeadas */
+  .cta-band { margin-inline: 0.75rem; border-radius: 18px; }
+}
+.cta-band__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(1.5rem, 4vw, 3rem);
+}
+.cta-band__text { flex: 1 1 auto; }
+.cta-band h2 { color: var(--white); margin: 0 0 0.75rem; }
+.cta-band p { color: rgba(255, 255, 255, 0.92); max-width: 62ch; margin: 0; }
+.cta-band .btn { flex: none; }
+@media (max-width: 780px) {
+  /* En móvil se apila: texto arriba, botón abajo */
+  .cta-band__inner { flex-direction: column; align-items: flex-start; }
+}
 
 /* ---------- 13. Servicios relacionados ---------- */
 .related__grid {
@@ -546,30 +599,6 @@ main section[id] { scroll-margin-top: 90px; }
 .related-card h3 { margin-top: 0; }
 .related-card p { color: var(--ink-soft); margin-bottom: 0; }
 .related-card .arrow { color: var(--magenta); font-weight: 600; font-family: var(--font-head); }
-
-/* ---------- 14. Newsletter ---------- */
-.newsletter {
-  background: var(--navy);
-  color: var(--white);
-}
-.newsletter h2 { color: var(--white); }
-.newsletter p { color: rgba(255, 255, 255, 0.8); }
-.newsletter__form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
-  max-width: 520px;
-}
-.newsletter__form input[type="email"] {
-  flex: 1 1 240px;
-  padding: 0.85rem 1.1rem;
-  border-radius: 999px;
-  border: 1px solid transparent;
-  font-family: var(--font-body);
-  font-size: 1rem;
-}
-.newsletter__note { font-size: 0.82rem; margin-top: 0.85rem; color: rgba(255,255,255,0.6); }
 
 /* ---------- 15. Footer ---------- */
 .site-footer {
@@ -607,122 +636,39 @@ main section[id] { scroll-margin-top: 90px; }
   .footer__grid { grid-template-columns: 1fr; }
 }
 
-/* ---------- 17. Barra de confianza ---------- */
-.trustbar {
-  background: var(--off-white);
-  border-bottom: 1px solid var(--border);
-}
-.trustbar__list {
-  display: flex;
-  flex-wrap: wrap;
+/* ---------- 18. Split: ilustración izquierda + texto derecha ---------- */
+.split__grid {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: clamp(2rem, 5vw, 4rem);
   align-items: center;
-  justify-content: center;
-  gap: 0.75rem 1.75rem;
-  list-style: none;
-  margin: 0;
-  padding-block: 1rem;
-  text-align: center;
 }
-.trustbar__item {
-  position: relative;
-  font-family: var(--font-head);
-  font-size: 0.95rem;
-  color: var(--navy);
+/* En móvil, una sola columna: la ilustración (primera en el DOM) queda arriba
+   y el texto debajo. */
+@media (max-width: 780px) {
+  .split__grid { grid-template-columns: 1fr; }
 }
-.trustbar__item strong { color: var(--magenta); font-weight: 600; }
-/* Divisor vertical entre señales (se oculta al apilar en móvil) */
-.trustbar__item + .trustbar__item::before {
-  content: "";
-  position: absolute;
-  left: -0.9rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 1px;
-  height: 1.1em;
-  background: var(--border);
-}
-@media (max-width: 620px) {
-  .trustbar__item + .trustbar__item::before { display: none; }
-}
-
-/* ---------- 18. Las dos miradas ---------- */
-.duo__grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  margin-top: 2.5rem;
-}
-@media (max-width: 700px) {
-  .duo__grid { grid-template-columns: 1fr; }
-}
-.duo-card {
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-top: 4px solid var(--teal);
-  border-radius: var(--radius);
-  padding: 1.75rem;
-  box-shadow: var(--shadow-sm);
-}
-.duo-card:nth-child(2) { border-top-color: var(--magenta); }
-.duo-card h3 { margin: 0.35rem 0 0.6rem; }
-.duo-card p { margin: 0; color: var(--ink-soft); }
-.duo__dir {
-  font-family: var(--font-head);
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  color: var(--ink-soft);
-  margin: 0;
-}
-.duo__close {
-  margin-top: 2rem;
-  font-family: var(--font-head);
-  font-weight: 500;
-  color: var(--navy);
-  max-width: 65ch;
-}
-
-/* ---------- 19. Qué recibes (entregables) ---------- */
-.deliverables {
-  list-style: none;
-  counter-reset: deliv;
-  padding: 0;
-  margin: 2.5rem 0 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
-}
-@media (max-width: 700px) {
-  .deliverables { grid-template-columns: 1fr; }
-}
-.deliverables li {
-  counter-increment: deliv;
-  display: flex;
-  gap: 1rem;
-  align-items: flex-start;
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1.5rem;
-  box-shadow: var(--shadow-sm);
-}
-.deliverables li::before {
-  content: counter(deliv);
-  flex: none;
-  width: 38px;
-  height: 38px;
+.split__content p.lead + p.lead { margin-top: 1.25rem; }
+/* Placeholder de la ilustración mientras no llega el archivo definitivo.
+   Mantiene la proporción para que el layout no salte al sustituirlo por <img>. */
+.media-placeholder {
+  aspect-ratio: 4 / 3;
   display: grid;
   place-items: center;
+  background: var(--off-white);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--ink-soft);
   font-family: var(--font-head);
-  font-weight: 700;
-  color: var(--white);
-  background: var(--navy);
-  border-radius: 50%;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
 }
-.deliverables h3 { margin: 0.15rem 0 0.35rem; font-size: 1.1rem; }
-.deliverables p { margin: 0; color: var(--ink-soft); font-size: 0.95rem; }
-.deliverables__cta { margin-top: 2.25rem; }
+.split__media img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
 
 /* ---------- 20. Modal de contacto ---------- */
 .modal {

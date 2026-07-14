@@ -32,7 +32,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 
   <!-- Estilos globales -->
-  <link rel="stylesheet" href="../../css/styles.css" />
+  <link rel="stylesheet" href="../../css/styles.css?v=20260714d" />
 
   <!-- =================================================================
        ZONA EDITABLE POR SERVICIO · DATOS ESTRUCTURADOS (JSON-LD)
@@ -207,7 +207,6 @@
           <ul class="anchor-nav__list">
             <li><a href="#por-que-importa">Por qué importa</a></li>
             <li><a href="#proceso">El proceso</a></li>
-            <li><a href="#que-recibe">Qué recibe</a></li>
             <li><a href="#faq">Preguntas frecuentes</a></li>
           </ul>
         </nav>
@@ -223,20 +222,34 @@
     <!-- ============================ HERO =========================== -->
     <!-- EDITABLE: copy del hero -->
     <section class="hero">
+      <!-- Video de fondo: detrás de todo, recortado por el border-radius del hero.
+           El fondo navy sólido del .hero sirve de fallback mientras carga o si falla. -->
+      <video class="hero__video" autoplay muted loop playsinline preload="auto" aria-hidden="true" tabindex="-1">
+        <source src="../../assets/video/background.mp4" type="video/mp4" />
+      </video>
+      <!-- Overlay navy semitransparente ENTRE el video y el contenido: mantiene legible el texto -->
+      <div class="hero__overlay" aria-hidden="true"></div>
       <div class="container">
-        <p class="eyebrow" style="color: var(--teal);">CSRD · ESRS · Sostenibilidad</p>
+        <!-- Breadcrumb visible (único). El schema BreadcrumbList vive en el <head>, no aquí -->
+        <nav class="breadcrumb breadcrumb--hero" aria-label="Ruta de navegación">
+          <ol class="breadcrumb__list">
+            <li><a href="https://responsable.net/">Inicio</a></li>
+            <li><a href="https://responsable.net/servicios/">Servicios</a></li>
+            <!-- EDITABLE: nombre del servicio actual -->
+            <li><span aria-current="page">Estudio de Doble Materialidad</span></li>
+          </ol>
+        </nav>
         <h1>Estudio de Doble Materialidad</h1>
         <p class="hero__lead">
-          Defina con criterio de negocio los temas de sostenibilidad que de verdad
-          importan para su empresa.
+          Transforme impactos, riesgos y oportunidades en foco estratégico
         </p>
         <p class="hero__text">
-          No todos los temas ASG pesan igual. Un estudio de doble materialidad
-          identifica cuáles impactan su operación, su reputación y su resultado
-          financiero, y cuáles genera su empresa sobre el entorno. Convertimos ese
-          análisis en decisiones claras: qué priorizar, qué reportar y dónde enfocar
-          recursos, con rigor metodológico y la experiencia de acompañar a empresas
-          en Latinoamérica desde 2011.
+          Cuando todos los temas de sostenibilidad parecen importantes, priorizar se
+          vuelve difícil. El estudio de doble materialidad ayuda a distinguir qué impactos
+          genera la empresa sobre las personas y el medio ambiente, y qué riesgos y
+          oportunidades pueden afectar su desempeño financiero. En ResponSable convertimos
+          ese análisis en foco estratégico para decidir dónde actuar, qué reportar y cómo
+          asignar mejor los recursos.
         </p>
         <div class="hero__actions">
           <a class="btn btn--primary" data-open-modal href="https://responsable.net/sigamos-en-contacto/">Solicitar propuesta</a>
@@ -245,45 +258,52 @@
       </div>
     </section>
 
-    <!-- ===================== BARRA DE CONFIANZA ==================== -->
-    <!-- EDITABLE: señales de confianza de la marca -->
-    <section class="trustbar" aria-label="Señales de confianza">
-      <div class="container">
-        <ul class="trustbar__list">
-          <li class="trustbar__item"><strong>Desde 2011</strong> acompañando empresas en sostenibilidad</li>
-          <li class="trustbar__item">Experiencia en <strong>Latinoamérica</strong></li>
-          <li class="trustbar__item">Caso destacado: materialidad con <strong>HEINEKEN México</strong></li>
-        </ul>
+    <!-- ============== DOBLE MATERIALIDAD PARA DECIDIR ============== -->
+    <!-- EDITABLE: beneficio estratégico. Ilustración a la izquierda, texto a la derecha -->
+    <section class="section" aria-labelledby="decidir-title">
+      <div class="container split__grid">
+        <div class="split__media">
+          <img src="../../assets/img/mundo_responsable.webp" alt="Ilustración de dos personas frente a un mundo sostenible, representando el equilibrio entre negocio y entorno" loading="lazy">
+        </div>
+        <div class="split__content">
+          <p class="eyebrow" style="color: var(--magenta);">Para orientar estrategia e informe de sostenibilidad</p>
+          <h2 id="decidir-title">Doble materialidad para decidir</h2>
+          <p class="lead">
+            Un estudio de doble materialidad convierte temas dispersos, presiones externas
+            e iniciativas aisladas en una agenda priorizada. Permite identificar qué
+            impactos genera la empresa y qué riesgos y oportunidades pueden afectar su
+            operación, reputación, desempeño financiero o licencia social para operar.
+          </p>
+          <p class="lead">
+            Con esa lectura, Dirección y el área de sostenibilidad pueden decidir qué
+            gestionar primero, alinear la estrategia, fortalecer el informe de
+            sostenibilidad y sostener conversaciones más sólidas con grupos de interés. El
+            valor no está en producir una matriz, sino en transformar información compleja
+            en criterios claros para decidir.
+          </p>
+        </div>
       </div>
     </section>
-
-    <!-- ========================== BREADCRUMB ========================= -->
-    <!-- Breadcrumb visible (el schema BreadcrumbList vive en el <head>, no aquí) -->
-    <nav class="breadcrumb" aria-label="Ruta de navegación">
-      <div class="container">
-        <ol class="breadcrumb__list">
-          <li><a href="https://responsable.net/">Inicio</a></li>
-          <li><a href="https://responsable.net/">Servicios</a></li>
-          <!-- EDITABLE: nombre del servicio actual -->
-          <li><span aria-current="page">Estudio de Doble Materialidad</span></li>
-        </ol>
-      </div>
-    </nav>
 
     <!-- ===================== INTRO + ILUSTRACIÓN ==================== -->
     <!-- EDITABLE: copy de la introducción -->
     <section class="section" id="por-que-importa">
       <div class="container intro__grid">
         <div class="intro__content">
-          <p class="eyebrow">Por qué importa</p>
-          <h2>El punto de partida de toda estrategia de sostenibilidad creíble</h2>
+          <p class="eyebrow">Impactos, riesgos y oportunidades priorizados</p>
+          <h2>Temas materiales claros</h2>
           <p class="lead">
-            No todos los asuntos ASG merecen la misma atención ni el mismo presupuesto.
-            El estudio de doble materialidad ordena el universo de temas, separa lo
-            relevante de lo accesorio y define el perímetro de su estrategia ESG y de su
-            informe de sostenibilidad. El resultado es una matriz de materialidad
-            defendible, alineada con las normas ESRS, que sirve de base para el reporte
-            CSRD y para la toma de decisiones.
+            El principal beneficio es dejar de gestionar la sostenibilidad como una lista
+            extensa de temas. La empresa distingue qué asuntos exigen acción inmediata,
+            cuáles pueden afectar su desempeño financiero y dónde existen oportunidades que
+            conviene desarrollar.
+          </p>
+          <p class="lead">
+            Así, puede enfocar recursos, justificar presupuesto, definir responsabilidades
+            e indicadores y sostener sus decisiones con mayor trazabilidad ante Dirección.
+            Cuando se consulta a grupos de interés, el análisis también incorpora
+            expectativas externas y ayuda a anticipar tensiones que una mirada
+            exclusivamente interna podría pasar por alto.
           </p>
         </div>
         <div class="intro__media">
@@ -298,150 +318,60 @@
       </div>
     </section>
 
-    <!-- ===================== LAS DOS MIRADAS ======================= -->
-    <!-- EDITABLE: explicación de las dos dimensiones -->
-    <section class="section section--tint" aria-labelledby="miradas-title">
-      <div class="container">
-        <p class="eyebrow">Las dos miradas</p>
-        <h2 id="miradas-title">Doble materialidad: dos dimensiones, un mismo diagnóstico</h2>
-        <p class="lead">
-          La doble materialidad evalúa cada tema desde dos perspectivas complementarias.
-          Entender ambas es la clave para priorizar con criterio.
-        </p>
-
-        <div class="duo__grid">
-          <article class="duo-card">
-            <p class="duo__dir">De adentro hacia afuera</p>
-            <h3>Materialidad de impacto</h3>
-            <p>
-              Cómo las operaciones de su empresa afectan al entorno, a las personas y a
-              las comunidades. Es la mirada que exige rendir cuentas sobre su huella real.
-            </p>
-          </article>
-          <article class="duo-card">
-            <p class="duo__dir">De afuera hacia adentro</p>
-            <h3>Materialidad financiera</h3>
-            <p>
-              Cómo los factores ambientales, sociales y de gobernanza afectan el
-              desempeño y la viabilidad financiera de su empresa. Es la mirada que
-              protege su negocio.
-            </p>
-          </article>
-        </div>
-
-        <p class="duo__close">
-          La doble materialidad integra ambas miradas en un mismo diagnóstico. Esa es la
-          exigencia de la CSRD y de los estándares ESRS.
-        </p>
-      </div>
-    </section>
-
-    <!-- ================= TEMAS MATERIALES + DIAGRAMA ================ -->
-    <!-- EDITABLE: temas materiales y diagrama de este servicio -->
-    <section class="section" aria-labelledby="temas-title">
-      <div class="container">
-        <p class="eyebrow">Qué analizamos</p>
-        <h2 id="temas-title">Temas materiales que evaluamos</h2>
-        <p class="lead">
-          Partimos del universo de temas ESRS y lo adaptamos a su sector para no dejar
-          fuera ningún asunto relevante ni sobredimensionar el análisis.
-        </p>
-
-        <div class="materiality__grid">
-          <article class="material-card">
-            <span class="tag">Ambiental</span>
-            <h3>Cambio climático</h3>
-            <p>Emisiones, riesgos de transición y físicos, y planes de descarbonización.</p>
-          </article>
-          <article class="material-card">
-            <span class="tag">Ambiental</span>
-            <h3>Recursos y economía circular</h3>
-            <p>Uso de materiales, agua, residuos y estrategias de circularidad.</p>
-          </article>
-          <article class="material-card">
-            <span class="tag">Social</span>
-            <h3>Personas y cadena de valor</h3>
-            <p>Condiciones laborales, diversidad, salud y derechos humanos.</p>
-          </article>
-          <article class="material-card">
-            <span class="tag">Gobernanza</span>
-            <h3>Conducta empresarial</h3>
-            <p>Ética, anticorrupción, gobierno del dato y gestión de proveedores.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
     <!-- ===================== PROCESO DE 4 PASOS ==================== -->
     <!-- EDITABLE: pasos del proceso de este servicio -->
-    <section class="section section--tint" id="proceso" aria-labelledby="proceso-title">
+    <section class="section process" id="proceso" aria-labelledby="proceso-title">
       <div class="container">
-        <p class="eyebrow">Cómo trabajamos</p>
-        <h2 id="proceso-title">El proceso en 4 pasos</h2>
-        <p class="lead">Un método estructurado que garantiza rigor y trazabilidad de principio a fin.</p>
+        <div class="process__head">
+          <h2 id="proceso-title" class="process__title">Nuestro<br />Proceso</h2>
+          <p class="process__intro">
+            Realizamos el estudio de doble materialidad con una metodología estructurada
+            para pasar del análisis de contexto a la matriz de doble materialidad, los
+            Impactos, Riesgos y Oportunidades (IROs) priorizados y las recomendaciones
+            estratégicas.
+          </p>
+        </div>
 
-        <ol class="steps">
-          <li>
-            <h3>Contexto y temas candidatos</h3>
-            <p>Analizamos su actividad, sector y cadena de valor para elaborar la lista de temas ESG candidatos.</p>
-          </li>
-          <li>
-            <h3>Consulta a grupos de interés</h3>
-            <p>Recogemos la visión de clientes, empleados, inversores y proveedores mediante encuestas y entrevistas.</p>
-          </li>
-          <li>
-            <h3>Evaluación de doble materialidad</h3>
-            <p>Puntuamos cada tema por impacto y por relevancia financiera con umbrales definidos y justificados.</p>
-          </li>
-          <li>
-            <h3>Matriz y hoja de ruta</h3>
-            <p>Entregamos la matriz priorizada, la documentación auditable y recomendaciones para el reporte.</p>
-          </li>
-        </ol>
-      </div>
-    </section>
-
-    <!-- ========================= QUÉ RECIBE ======================== -->
-    <!-- EDITABLE: entregables concretos de este servicio -->
-    <section class="section" id="que-recibe" aria-labelledby="entregables-title">
-      <div class="container">
-        <p class="eyebrow">Qué recibe</p>
-        <h2 id="entregables-title">Entregables concretos, listos para usar</h2>
-        <p class="lead">
-          Sabe exactamente qué obtiene. Cada estudio se traduce en documentos que
-          puede llevar a su comité, a su auditor y a su informe.
-        </p>
-
-        <ol class="deliverables">
-          <li>
-            <div>
-              <h3>Matriz de doble materialidad priorizada</h3>
-              <p>Sus temas materiales ordenados por relevancia de impacto y financiera.</p>
-            </div>
-          </li>
-          <li>
-            <div>
-              <h3>Análisis de IROs</h3>
-              <p>Impactos, riesgos y oportunidades identificados y evaluados con criterio.</p>
-            </div>
-          </li>
-          <li>
-            <div>
-              <h3>Hoja de ruta estratégica</h3>
-              <p>Recomendaciones concretas para priorizar, gestionar y avanzar.</p>
-            </div>
-          </li>
-          <li>
-            <div>
-              <h3>Base para su informe de sostenibilidad</h3>
-              <p>Insumo alineado a CSRD, ESRS y GRI, listo para reportar.</p>
-            </div>
-          </li>
-        </ol>
-
-        <p class="deliverables__cta">
-          <a class="btn btn--primary" data-open-modal href="https://responsable.net/sigamos-en-contacto/">Solicitar propuesta</a>
-        </p>
+        <div class="process__card">
+          <ol class="steps">
+            <li class="steps__item">
+              <span class="steps__num steps__num--1">1</span>
+              <h3>Entender el contexto</h3>
+              <p>
+                Analizamos estrategia, operación, documentos internos, cadena de valor,
+                referentes y benchmark sectorial para identificar temas potencialmente
+                relevantes.
+              </p>
+            </li>
+            <li class="steps__item">
+              <span class="steps__num steps__num--2">2</span>
+              <h3>Identificar los IROs</h3>
+              <p>
+                Identificamos los impactos que genera la empresa y los riesgos y
+                oportunidades de sostenibilidad que pueden afectar su desempeño y
+                continuidad.
+              </p>
+            </li>
+            <li class="steps__item">
+              <span class="steps__num steps__num--3">3</span>
+              <h3>Evaluar la materialidad</h3>
+              <p>
+                Aplicamos consultas y sesiones de trabajo para valorar la materialidad de
+                impacto y financiera, y consolidarlas mediante criterios claros y
+                trazables.
+              </p>
+            </li>
+            <li class="steps__item">
+              <span class="steps__num steps__num--4">4</span>
+              <h3>Convertir en decisiones</h3>
+              <p>
+                Traducimos los resultados en prioridades y recomendaciones para orientar la
+                estrategia, la gestión de riesgos, el informe y el diálogo con grupos de
+                interés.
+              </p>
+            </li>
+          </ol>
+        </div>
       </div>
     </section>
 
@@ -597,17 +527,18 @@
     </section>
 
     <!-- ========================= BANDA CTA ========================= -->
-    <!-- EDITABLE: copy del CTA -->
-    <section class="section" id="contacto">
-      <div class="container">
-        <div class="cta-band">
-          <h2>¿Listos para definir lo que de verdad importa?</h2>
+    <!-- EDITABLE: copy del CTA. Franja rosa full-width: texto izq · botón der -->
+    <section class="section cta-band" id="contacto">
+      <div class="container cta-band__inner">
+        <div class="cta-band__text">
+          <h2>Ordene sus temas materiales con criterio de negocio</h2>
           <p>
-            Le preparamos una propuesta a medida para su estudio de doble materialidad,
-            con alcance, plazos y presupuesto claros.
+            Priorice sus impactos, riesgos y oportunidades con criterio de negocio, y
+            convierta la doble materialidad en la base para orientar su estrategia de
+            sostenibilidad, su informe de sostenibilidad y sus decisiones de negocio.
           </p>
-          <a class="btn btn--primary" data-open-modal href="https://responsable.net/sigamos-en-contacto/">Solicitar propuesta</a>
         </div>
+        <a class="btn btn--dark" data-open-modal href="https://responsable.net/sigamos-en-contacto/">Contáctenos</a>
       </div>
     </section>
 
@@ -641,21 +572,6 @@
       </div>
     </section>
 
-    <!-- ========================= NEWSLETTER ======================== -->
-    <section class="section newsletter" aria-labelledby="newsletter-title">
-      <div class="container">
-        <p class="eyebrow" style="color: var(--teal);">Newsletter</p>
-        <h2 id="newsletter-title">Sostenibilidad aplicable, cada mes</h2>
-        <p>Novedades de CSRD, plantillas y buenas prácticas ESG en su correo. Sin spam.</p>
-
-        <form class="newsletter__form" action="#" method="post">
-          <label class="visually-hidden" for="news-email">Correo electrónico</label>
-          <input type="email" id="news-email" name="email" placeholder="nombre@empresa.com" required />
-          <button class="btn btn--primary" type="submit">Suscribirme</button>
-        </form>
-        <p class="newsletter__note">Al suscribirte aceptas nuestra política de privacidad.</p>
-      </div>
-    </section>
   </main>
 
   <!-- ============================ FOOTER ========================== -->
