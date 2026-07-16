@@ -8,6 +8,29 @@
 (function () {
   "use strict";
 
+  /* =====================================================================
+     CONFIGURACIÓN — Endpoint del formulario de contacto
+     ---------------------------------------------------------------------
+     ⚠️ TEMPORAL · Web3Forms
+     Mientras no exista la cuenta de Vercel, el formulario se envía por
+     Web3Forms (https://web3forms.com). La access key viaja en un input
+     hidden del formulario (name="access_key"), NO aquí.
+
+     ▶ CÓMO REVERTIR A VERCEL + RESEND (cuando exista la cuenta):
+       1) Cambia CONTACT_ENDPOINT por la URL de la función de Vercel:
+            var CONTACT_ENDPOINT = "https://TU-PROYECTO.vercel.app/api/contacto";
+       2) En el fetch de abajo, comprueba el éxito con `payload.ok` en vez de
+          `payload.success` (ver el comentario "TEMPORAL Web3Forms" en la
+          condición del .then).
+       3) En el HTML del modal, elimina los 3 inputs hidden de Web3Forms
+          (access_key, subject, from_name).
+       La función de Vercel (api/contacto.js), vercel.json y .env.example
+       quedan intactos y listos para reutilizarse.
+     ===================================================================== */
+  // Endpoint de Vercel para revertir (déjalo comentado mientras se usa Web3Forms):
+  // var CONTACT_ENDPOINT = "https://TU-PROYECTO.vercel.app/api/contacto";
+  var CONTACT_ENDPOINT = "https://api.web3forms.com/submit"; // TEMPORAL (Web3Forms)
+
   /* ---------- 1. Menú global (hamburguesa) ---------- */
   function initGlobalMenu() {
     var toggle = document.querySelector("[data-menu-toggle]");
@@ -109,6 +132,8 @@
     var form = modal.querySelector("[data-contact-form]");
     var formWrap = modal.querySelector("[data-modal-form-wrap]");
     var success = modal.querySelector("[data-modal-success]");
+    var submitBtn = form.querySelector(".modal__submit, [type='submit']");
+    var formError = form.querySelector("[data-form-error]");
     var openers = document.querySelectorAll("[data-open-modal]");
     var lastFocused = null;
 
@@ -137,6 +162,27 @@
       form.querySelectorAll(".field__error").forEach(function (e) {
         e.textContent = "";
       });
+      hideFormError();
+      setSubmitting(false);
+    }
+
+    function hideFormError() {
+      if (formError) {
+        formError.hidden = true;
+        formError.textContent = "";
+      }
+    }
+
+    // Deshabilita/rehabilita el botón y alterna el texto "Enviando...".
+    function setSubmitting(state) {
+      if (!submitBtn) return;
+      submitBtn.disabled = state;
+      if (state) {
+        if (!submitBtn.dataset.label) submitBtn.dataset.label = submitBtn.textContent;
+        submitBtn.textContent = "Enviando…";
+      } else if (submitBtn.dataset.label) {
+        submitBtn.textContent = submitBtn.dataset.label;
+      }
     }
 
     function resetToForm() {
@@ -222,6 +268,8 @@
     // Envío
     form.addEventListener("submit", function (e) {
       e.preventDefault();
+      hideFormError();
+
       var ok = true;
       form.querySelectorAll("input, textarea").forEach(function (input) {
         if (!validateField(input)) ok = false;
@@ -232,24 +280,54 @@
         return;
       }
 
-      // ===================================================================
-      // TODO: CONEXIÓN REAL AL BACKEND
-      // Aquí irá el envío real al endpoint de ResponSable (por definir).
-      // Sustituir el bloque simulado por algo como:
-      //
-      //   var data = Object.fromEntries(new FormData(form).entries());
-      //   fetch("<ENDPOINT>", {
-      //     method: "POST",
-      //     headers: { "Content-Type": "application/json" },
-      //     body: JSON.stringify(data)
-      //   })
-      //     .then(function (r) { if (!r.ok) throw new Error(); showSuccess(); })
-      //     .catch(function () { /* mostrar error de envío */ });
-      //
-      // Por ahora simulamos el éxito directamente:
-      // ===================================================================
-      showSuccess();
+      // Recolecta los campos (incluye el honeypot "website", vacío en humanos).
+      var data = {};
+      new FormData(form).forEach(function (value, key) {
+        data[key] = value;
+      });
+
+      setSubmitting(true);
+
+      fetch(CONTACT_ENDPOINT, {
+        method: "POST",
+        // TEMPORAL (Web3Forms): requiere Accept: application/json.
+        // Al revertir a Vercel puedes dejar solo Content-Type.
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+        .then(function (r) {
+          return r
+            .json()
+            .catch(function () { return {}; })
+            .then(function (payload) {
+              // TEMPORAL Web3Forms: éxito = payload.success === true.
+              // Para revertir a Vercel/Resend usa: if (!r.ok || !payload.ok)
+              if (!r.ok || !payload.success) throw new Error(payload.message || "envío fallido");
+              return payload;
+            });
+        })
+        .then(function () {
+          setSubmitting(false);
+          showSuccess();
+        })
+        .catch(function () {
+          setSubmitting(false);
+          showError();
+        });
     });
+
+    function showError() {
+      if (!formError) return;
+      formError.innerHTML =
+        "No pudimos enviar su solicitud. Intente de nuevo o escríbanos a " +
+        '<a href="mailto:hola@responsable.net">hola@responsable.net</a>';
+      formError.hidden = false;
+      formError.focus && formError.setAttribute("tabindex", "-1");
+      if (formError.focus) formError.focus();
+    }
 
     function showSuccess() {
       formWrap.hidden = true;

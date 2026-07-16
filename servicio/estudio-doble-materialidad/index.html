@@ -15,6 +15,12 @@
   <meta name="description" content="Realizamos su estudio de doble materialidad: identificamos impactos, riesgos y oportunidades ASG y los convertimos en decisiones de negocio. Alineado a CSRD y ESRS." />
   <link rel="canonical" href="https://responsable.net/servicio/estudio-doble-materialidad/" />
 
+  <!-- TEMPORAL — copia de trabajo en /servicios/ (plural): no indexar para evitar
+       contenido duplicado con la original en WordPress. El canonical de arriba y
+       todas las URLs de metadatos/schema siguen apuntando al singular /servicio/.
+       QUITAR esta línea cuando esta versión pase a ser la definitiva. -->
+  <meta name="robots" content="noindex, nofollow" />
+
   <!-- Open Graph / redes sociales (editable por servicio) -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="ResponSable" />
@@ -620,19 +626,29 @@
     <div class="modal__overlay" data-modal-overlay></div>
 
     <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="contact-modal-title">
+      <!-- Columna izquierda: título + texto + ilustración (decorativa; el clic aquí no cierra el modal). -->
+      <div class="modal__media">
+        <h2 class="modal__media-title" id="contact-modal-title">Contáctenos</h2>
+        <p class="modal__media-text">
+          Agradecemos su interés en ResponSable. Elija entre las siguientes opciones;
+          nos comunicaremos con usted tan pronto como sea posible.
+        </p>
+        <img
+          src="../../assets/img/contacto.webp"
+          alt="Ilustración de dos personas conversando frente a una gran pantalla, representando el contacto y la asesoría de ResponSable"
+          class="modal__media-img"
+          loading="lazy"
+        />
+      </div>
+
+      <!-- Columna derecha: formulario / éxito -->
+      <div class="modal__panel">
       <button type="button" class="modal__close" data-modal-close aria-label="Cerrar formulario">
         <span aria-hidden="true">&times;</span>
       </button>
 
-      <!-- Vista formulario -->
+      <!-- Vista formulario (el título vive en la columna izquierda) -->
       <div class="modal__body" data-modal-form-wrap>
-        <p class="modal__eyebrow">Solicitar propuesta</p>
-        <h2 class="modal__title" id="contact-modal-title">Hablemos de su estudio de doble materialidad</h2>
-        <p class="modal__subtitle">
-          Cuéntenos sobre su empresa y le preparamos una propuesta a la medida.
-          Le respondemos en menos de 24 horas hábiles.
-        </p>
-
         <form class="modal__form" data-contact-form novalidate>
           <div class="form-grid">
             <div class="field">
@@ -681,6 +697,28 @@
             <p class="field__error" data-error-for="cf-privacy" aria-live="polite"></p>
           </div>
 
+          <!-- Honeypot anti-spam: oculto para humanos; si un bot lo llena, el
+               servidor descarta el envío. No borrar. -->
+          <div class="hp" aria-hidden="true">
+            <label for="cf-website">No rellenar este campo</label>
+            <input type="text" id="cf-website" name="website" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <!-- =============================================================
+               TEMPORAL · Web3Forms
+               Mientras no exista la cuenta de Vercel, el envío pasa por
+               Web3Forms (ver js/main.js → CONTACT_ENDPOINT). Estos campos
+               ocultos son los que Web3Forms necesita.
+               ▶ AL REVERTIR A VERCEL/RESEND: elimina estos 3 inputs hidden.
+               El honeypot de arriba (name="website") NO se toca.
+               ============================================================= -->
+          <input type="hidden" name="access_key" value="e8704c81-01ea-41dd-bf81-0dcddd4ddde5" />
+          <input type="hidden" name="subject" value="Nueva solicitud de propuesta - Estudio de Doble Materialidad" />
+          <input type="hidden" name="from_name" value="Web ResponSable" />
+
+          <!-- Error de envío (se muestra solo si falla el fetch) -->
+          <p class="modal__form-error" data-form-error role="alert" hidden></p>
+
           <button type="submit" class="btn btn--primary modal__submit">Enviar solicitud</button>
           <p class="modal__note">Sus datos se tratan de forma confidencial. No compartimos su información.</p>
         </form>
@@ -699,6 +737,7 @@
           en menos de 24 horas hábiles.
         </p>
         <button type="button" class="btn btn--light" data-modal-close>Cerrar</button>
+      </div>
       </div>
     </div>
   </div>

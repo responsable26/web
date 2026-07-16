@@ -13,10 +13,14 @@ Cada servicio es una página estática que se sube por FTP a GoDaddy y **convive
 ```
 web/
 ├── README.md                         ← este archivo
+├── vercel.json                       ← config de la función serverless (solo para Vercel)
+├── .env.example                      ← documenta las variables de entorno (sin valores reales)
+├── api/
+│   └── contacto.js                   ← función serverless: envía el formulario por Resend
 ├── css/
 │   └── styles.css                    ← estilos globales de marca (se reutiliza en todos los servicios)
 ├── js/
-│   └── main.js                       ← interacciones: menú móvil + acordeón de FAQ
+│   └── main.js                       ← interacciones: menú móvil + acordeón de FAQ + envío del modal
 ├── assets/
 │   └── img/
 │       └── intro-doble-materialidad.svg   ← imágenes (una por servicio, o compartidas)
@@ -24,6 +28,10 @@ web/
     └── estudio-doble-materialidad/
         └── index.html                ← el template de servicio (página completa)
 ```
+
+> ℹ️ El sitio estático (HTML/CSS/JS) se sube a **GoDaddy** por FTP como hasta ahora.
+> La carpeta `api/` **no** va a GoDaddy: se despliega aparte en **Vercel** (ver sección 6),
+> porque GoDaddy Managed WordPress no ejecuta funciones serverless.
 
 **Regla de oro de las carpetas:** cada servicio vive en su propia subcarpeta dentro de `servicio/`
 y el archivo **siempre se llama `index.html`**. Así la URL queda limpia, sin `.html`:
@@ -161,9 +169,10 @@ http://localhost:8000/servicio/estudio-doble-materialidad/
 ## 5. Pruebas del modal de contacto (Playwright)
 
 En `tests/` hay una **prueba de humo** automatizada que valida el modal de contacto de una
-página de servicio: apertura desde los 4 botones, validación de campos (obligatorios, email,
-envío correcto → éxito), los 3 métodos de cierre (X, overlay, Escape), bloqueo de scroll del
-fondo, layout responsive a 640px y retorno del foco. Además genera dos capturas
+página de servicio: apertura desde los 3 botones, validación de campos (obligatorios, email,
+envío correcto → éxito, con el endpoint de Vercel interceptado), los métodos de cierre
+(X y Escape), bloqueo de scroll del fondo, layout responsive a 640px y retorno del foco.
+Además genera dos capturas
 (`modal-desktop.png` y `modal-mobile.png`) para revisar el diseño.
 
 ### Cómo correrla
@@ -192,11 +201,85 @@ SERVICE_PATH=/servicio/otro-servicio/ npm test
 
 También puedes cambiar el servidor con `BASE` (por defecto `http://localhost:8000`).
 
-### Cuando conectemos el backend real
-
-El envío del formulario está **simulado** por ahora (ver el bloque marcado
-`// TODO: CONEXIÓN REAL AL BACKEND` en `js/main.js`). Cuando se conecte el endpoint real,
-esta misma prueba sirve para re-validar que el flujo sigue funcionando; puede que haya que
-ajustar la parte del envío para contemplar la petición de red (por ejemplo, interceptándola).
-
 > `node_modules/` y las capturas `.png` de `tests/` están en `.gitignore`, no se versionan.
+
+---
+
+## 6. Formulario de contacto → Resend (función serverless en Vercel)
+
+> ⚠️ **ESTADO ACTUAL (TEMPORAL): el modal envía por Web3Forms, no por Vercel.**
+> Mientras no exista la cuenta de Vercel, `js/main.js` apunta a
+> `https://api.web3forms.com/submit` y el formulario lleva 3 inputs hidden
+> (`access_key`, `subject`, `from_name`). Todo lo de Vercel/Resend de abajo
+> (`api/contacto.js`, `vercel.json`, `.env.example`) queda **intacto y listo**.
+> Cómo revertir a Vercel: ver el comentario grande al inicio de `js/main.js`.
+>
+> Nota: Web3Forms (plan free) solo funciona **desde el navegador del visitante**;
+> rechaza llamadas desde IPs de servidor. Por eso la prueba de entrega real se
+> hace abriendo la página en un navegador normal (local o ya publicada), no por curl.
+
+El plan definitivo: el modal de contacto envía las solicitudes por correo usando **Resend**.
+Como GoDaddy Managed WordPress no ejecuta código de servidor, el envío pasa por una
+**función serverless en Vercel** (`api/contacto.js`). Así la **API key de Resend nunca queda
+en el cliente**.
+
+**Flujo:** el visitante llena el modal en `responsable.net` → el JS hace `fetch` a la función
+de Vercel → la función valida, revisa el honeypot anti-spam y llama a Resend → llega el correo
+a la dirección configurada.
+
+### 6.1 Piezas del sistema
+
+| Archivo            | Rol                                                                          |
+| ------------------ | ---------------------------------------------------------------------------- |
+| `api/contacto.js`  | Función serverless. Valida, aplica CORS + honeypot y envía vía Resend.        |
+| `vercel.json`      | Config mínima de la función (timeout).                                        |
+| `.env.example`     | Documenta las variables necesarias. **No** contiene valores reales.          |
+| `js/main.js`       | Constante `CONTACT_ENDPOINT` (arriba del archivo) + `fetch` al enviar.        |
+
+### 6.2 Variables de entorno (se configuran en Vercel, no en el repo)
+
+| Variable          | Qué es                                                              |
+| ----------------- | ------------------------------------------------------------------ |
+| `RESEND_API_KEY`  | Clave de API de Resend (`re_…`). Se genera en resend.com/api-keys.  |
+| `CONTACTO_TO`     | Correo destino al que llegan las solicitudes.                       |
+
+> El remitente (`from`) está fijo en `api/contacto.js` como
+> `contacto@mail.responsable.net` (dominio verificado en Resend). Si cambia el dominio
+> verificado, actualiza la constante `FROM` en ese archivo.
+
+### 6.3 Desplegar en Vercel (paso a paso)
+
+1. **Sube el proyecto a un repositorio** (GitHub/GitLab/Bitbucket) o instala la CLI de Vercel
+   (`npm i -g vercel`). Basta con la raíz del proyecto; Vercel detecta la carpeta `api/`.
+2. En **vercel.com → Add New → Project**, importa el repositorio (o corre `vercel` en la raíz).
+   - Framework preset: **Other** (es un sitio estático + funciones, sin build).
+   - No hace falta comando de build ni carpeta de salida.
+3. Ve a **Project → Settings → Environment Variables** y agrega, para el entorno
+   **Production** (y Preview si quieres probar):
+   - `RESEND_API_KEY` = tu clave real de Resend.
+   - `CONTACTO_TO` = el correo donde quieres recibir las solicitudes.
+4. **Deploy.** Al terminar tendrás una URL como
+   `https://responsable-contacto.vercel.app`. Tu endpoint será esa URL + `/api/contacto`.
+5. **Conecta el frontend:** abre `js/main.js`, y arriba del archivo cambia la constante:
+   ```js
+   var CONTACT_ENDPOINT = "https://TU-PROYECTO.vercel.app/api/contacto";
+   ```
+   por la URL real de tu deploy. Vuelve a subir `js/main.js` a GoDaddy por FTP.
+6. **Prueba** desde `https://responsable.net/soluciones/estudio-doble-materialidad/`:
+   llena el modal y confirma que llega el correo. Si algo falla, revisa los **Logs** de la
+   función en el panel de Vercel.
+
+> El CORS de la función ya autoriza `https://responsable.net`. Si algún día la página se
+> sirve desde otro dominio, actualiza `ALLOWED_ORIGIN` en `api/contacto.js`.
+
+### 6.4 Anti-spam (honeypot)
+
+El formulario incluye un campo oculto `website` (clase `.hp`, fuera de pantalla). Un humano
+nunca lo ve ni lo llena; un bot sí. Si llega con contenido, la función responde `200` pero
+**no envía** ningún correo. No borres ese campo del HTML.
+
+### 6.5 Variables locales (opcional, para probar la función en tu máquina)
+
+Copia `.env.example` a `.env` y pon tus valores reales. `.env` está en `.gitignore`, así que
+**no se sube al repo**. Con la CLI de Vercel puedes correr la función localmente con
+`vercel dev`.

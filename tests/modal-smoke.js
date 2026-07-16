@@ -2,9 +2,10 @@
    ResponSable — Prueba de humo del modal de contacto (Playwright)
    ---------------------------------------------------------------------
    Valida el modal de conversión de una página de servicio:
-     1. Abre desde los 4 botones con data-open-modal
+     1. Abre desde los 3 botones con data-open-modal
      2. Validación (obligatorios vacíos, email inválido, envío correcto -> éxito)
-     3. Cierra por X, clic en overlay y Escape (+ reabrir sin errores viejos)
+        El envío real llama a la función serverless de Vercel; aquí se intercepta.
+     3. Cierra por X y Escape (+ reabrir sin errores viejos)
      4. Bloquea/restablece el scroll del fondo
      5. Responsive a 640px (grid a 1 columna, sin desbordamiento)
      6. El foco vuelve al botón que abrió el modal
@@ -46,6 +47,19 @@ async function isOpen(page) {
 (async () => {
   const browser = await chromium.launch();
   const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+
+  // El envío del formulario hace fetch a un endpoint externo. En la prueba lo
+  // interceptamos y respondemos ok, para validar el flujo hasta el éxito sin
+  // enviar correos reales.
+  //   - TEMPORAL (Web3Forms): api.web3forms.com/submit → { success: true }
+  //   - Al revertir a Vercel: api/contacto.js → { ok: true } (añade esa ruta)
+  await context.route("**/api.web3forms.com/submit", (route) =>
+    route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true }) })
+  );
+  await context.route("**/api/contacto", (route) =>
+    route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true, success: true }) })
+  );
+
   const page = await context.newPage();
 
   try {
@@ -56,10 +70,10 @@ async function isOpen(page) {
     process.exit(2);
   }
 
-  // ---------- 1. Abre desde los 4 botones ----------
+  // ---------- 1. Abre desde los 3 botones ----------
   console.log("\n== 1. Apertura desde los botones data-open-modal ==");
   const openerCount = await page.locator("[data-open-modal]").count();
-  rec(1, "Hay 4 botones data-open-modal", openerCount === 4, `encontrados: ${openerCount}`);
+  rec(1, "Hay 3 botones data-open-modal", openerCount === 3, `encontrados: ${openerCount}`);
   for (let i = 0; i < openerCount; i++) {
     const label = (await page.locator("[data-open-modal]").nth(i).innerText()).trim();
     await openWith(page, i);
@@ -124,7 +138,7 @@ async function isOpen(page) {
 
   await page.fill("#cf-email", "ana.ramirez@acme.com");
   await page.locator("[data-contact-form] button[type=submit]").click();
-  await page.waitForTimeout(150);
+  await page.locator("[data-modal-success]").waitFor({ state: "visible", timeout: 3000 }).catch(() => {});
   const successShown = await page.locator("[data-modal-success]").evaluate((el) => !el.hidden);
   const formHidden = await page.locator("[data-modal-form-wrap]").evaluate((el) => el.hidden);
   rec(2, "Formulario correcto muestra estado de éxito", successShown && formHidden);
@@ -144,14 +158,17 @@ async function isOpen(page) {
   rec(3, "Cierra con la X", await modalHidden(page));
 
   await openWith(page, 0);
-  await page.mouse.click(8, 8);
-  await page.waitForTimeout(120);
-  rec(3, "Cierra con clic en el overlay", await modalHidden(page));
-
-  await openWith(page, 0);
   await page.keyboard.press("Escape");
   await page.waitForTimeout(120);
   rec(3, "Cierra con Escape", await modalHidden(page));
+
+  // El modal es a pantalla completa: NO se cierra con clic en la ilustración.
+  await openWith(page, 0);
+  await page.mouse.click(8, 8);
+  await page.waitForTimeout(120);
+  rec(3, "Clic en la ilustración NO cierra (solo X y Escape)", await isOpen(page));
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(100);
 
   // 3b. Reabrir tras cerrar queda sin errores viejos
   await openWith(page, 0);

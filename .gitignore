@@ -12,3 +12,9 @@ Desktop.ini
 
 # Dependencias (por si acaso en la raíz)
 node_modules/
+
+# Variables de entorno con secretos (la key de Resend). Solo se versiona .env.example
+.env
+.env.local
+.env.*.local
+.vercel/
