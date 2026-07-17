@@ -48,16 +48,11 @@ async function isOpen(page) {
   const browser = await chromium.launch();
   const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
 
-  // El envío del formulario hace fetch a un endpoint externo. En la prueba lo
-  // interceptamos y respondemos ok, para validar el flujo hasta el éxito sin
-  // enviar correos reales.
-  //   - TEMPORAL (Web3Forms): api.web3forms.com/submit → { success: true }
-  //   - Al revertir a Vercel: api/contacto.js → { ok: true } (añade esa ruta)
-  await context.route("**/api.web3forms.com/submit", (route) =>
-    route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ success: true }) })
-  );
+  // El envío del formulario hace fetch a la función serverless de Vercel
+  // (api/contacto.js). En la prueba la interceptamos y respondemos { ok: true }
+  // para validar el flujo hasta el éxito sin enviar correos reales.
   await context.route("**/api/contacto", (route) =>
-    route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true, success: true }) })
+    route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true }) })
   );
 
   const page = await context.newPage();

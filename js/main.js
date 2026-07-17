@@ -11,25 +11,14 @@
   /* =====================================================================
      CONFIGURACIÓN — Endpoint del formulario de contacto
      ---------------------------------------------------------------------
-     ⚠️ TEMPORAL · Web3Forms
-     Mientras no exista la cuenta de Vercel, el formulario se envía por
-     Web3Forms (https://web3forms.com). La access key viaja en un input
-     hidden del formulario (name="access_key"), NO aquí.
+     El formulario se envía a nuestra función serverless en Vercel
+     (api/contacto.js), que reenvía la solicitud por correo con Resend.
+     La API key de Resend vive SOLO en el servidor (variable de entorno
+     RESEND_API_KEY); los destinatarios están fijos en api/contacto.js.
 
-     ▶ CÓMO REVERTIR A VERCEL + RESEND (cuando exista la cuenta):
-       1) Cambia CONTACT_ENDPOINT por la URL de la función de Vercel:
-            var CONTACT_ENDPOINT = "https://TU-PROYECTO.vercel.app/api/contacto";
-       2) En el fetch de abajo, comprueba el éxito con `payload.ok` en vez de
-          `payload.success` (ver el comentario "TEMPORAL Web3Forms" en la
-          condición del .then).
-       3) En el HTML del modal, elimina los 3 inputs hidden de Web3Forms
-          (access_key, subject, from_name).
-       La función de Vercel (api/contacto.js), vercel.json y .env.example
-       quedan intactos y listos para reutilizarse.
+     Si cambia el proyecto/dominio de Vercel, actualiza esta URL.
      ===================================================================== */
-  // Endpoint de Vercel para revertir (déjalo comentado mientras se usa Web3Forms):
-  // var CONTACT_ENDPOINT = "https://TU-PROYECTO.vercel.app/api/contacto";
-  var CONTACT_ENDPOINT = "https://api.web3forms.com/submit"; // TEMPORAL (Web3Forms)
+  var CONTACT_ENDPOINT = "https://web-three-ivory-qn6j5dod52.vercel.app/api/contacto";
 
   /* ---------- 1. Menú global (hamburguesa) ---------- */
   function initGlobalMenu() {
@@ -297,11 +286,8 @@
 
       fetch(CONTACT_ENDPOINT, {
         method: "POST",
-        // TEMPORAL (Web3Forms): requiere Accept: application/json.
-        // Al revertir a Vercel puedes dejar solo Content-Type.
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json",
         },
         body: JSON.stringify(data),
       })
@@ -310,9 +296,8 @@
             .json()
             .catch(function () { return {}; })
             .then(function (payload) {
-              // TEMPORAL Web3Forms: éxito = payload.success === true.
-              // Para revertir a Vercel/Resend usa: if (!r.ok || !payload.ok)
-              if (!r.ok || !payload.success) throw new Error(payload.message || "envío fallido");
+              // Éxito = respuesta HTTP ok y { ok: true } de api/contacto.js.
+              if (!r.ok || !payload.ok) throw new Error(payload.error || "envío fallido");
               return payload;
             });
         })

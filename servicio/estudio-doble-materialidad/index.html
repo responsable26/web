@@ -772,17 +772,9 @@
             <input type="text" id="cf-website" name="website" tabindex="-1" autocomplete="off" />
           </div>
 
-          <!-- =============================================================
-               TEMPORAL · Web3Forms
-               Mientras no exista la cuenta de Vercel, el envío pasa por
-               Web3Forms (ver js/main.js → CONTACT_ENDPOINT). Estos campos
-               ocultos son los que Web3Forms necesita.
-               ▶ AL REVERTIR A VERCEL/RESEND: elimina estos 3 inputs hidden.
-               El honeypot de arriba (name="website") NO se toca.
-               ============================================================= -->
-          <input type="hidden" name="access_key" value="e8704c81-01ea-41dd-bf81-0dcddd4ddde5" />
-          <input type="hidden" name="subject" value="Nueva solicitud de propuesta - Estudio de Doble Materialidad" />
-          <input type="hidden" name="from_name" value="Web ResponSable" />
+          <!-- El envío va por la función serverless de Vercel (api/contacto.js),
+               que reenvía el correo con Resend. El asunto y el remitente están
+               fijos en esa función; no hacen falta campos ocultos en el HTML. -->
 
           <!-- Error de envío (se muestra solo si falla el fetch) -->
           <p class="modal__form-error" data-form-error role="alert" hidden></p>
