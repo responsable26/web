@@ -241,8 +241,10 @@ a la dirección configurada.
 | Variable          | Qué es                                                              |
 | ----------------- | ------------------------------------------------------------------ |
 | `RESEND_API_KEY`  | Clave de API de Resend (`re_…`). Se genera en resend.com/api-keys.  |
-| `CONTACTO_TO`     | Correo destino al que llegan las solicitudes.                       |
 
+> Los destinatarios (`to`) están **hardcodeados** en `api/contacto.js` (constante
+> `TO`), no en una variable de entorno. Para cambiarlos, edita ese array.
+>
 > El remitente (`from`) está fijo en `api/contacto.js` como
 > `contacto@mail.responsable.net` (dominio verificado en Resend). Si cambia el dominio
 > verificado, actualiza la constante `FROM` en ese archivo.
@@ -257,7 +259,7 @@ a la dirección configurada.
 3. Ve a **Project → Settings → Environment Variables** y agrega, para el entorno
    **Production** (y Preview si quieres probar):
    - `RESEND_API_KEY` = tu clave real de Resend.
-   - `CONTACTO_TO` = el correo donde quieres recibir las solicitudes.
+   - Los destinatarios ya están fijos en `api/contacto.js` (constante `TO`); no hay que configurarlos aquí.
 4. **Deploy.** Al terminar tendrás una URL como
    `https://responsable-contacto.vercel.app`. Tu endpoint será esa URL + `/api/contacto`.
 5. **Conecta el frontend:** abre `js/main.js`, y arriba del archivo cambia la constante:

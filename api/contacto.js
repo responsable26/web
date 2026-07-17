@@ -14,6 +14,18 @@ var FROM = "ResponSable <contacto@mail.responsable.net>";
 
 var SUBJECT = "Nueva solicitud de propuesta - Estudio de Doble Materialidad";
 
+// Destinatarios de las solicitudes. Fijos en el código (un solo envío al array).
+var TO = [
+  "andres@responsable.net",
+  "gwenaelle@responsable.net",
+  "fernanda@responsable.net",
+  "elian@responsable.net",
+  "hola@responsable.net",
+  "hola@scndal.com",
+  "michel.l@scndal.com",
+  "andrea.r@scndal.com",
+];
+
 var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function setCors(res) {
@@ -106,9 +118,10 @@ module.exports = async function handler(req, res) {
   }
 
   // --- Configuración del servidor -----------------------------------
+  // Los destinatarios (TO) están fijos en el código. Solo la API key es
+  // sensible y se lee del entorno.
   var apiKey = process.env.RESEND_API_KEY;
-  var to = process.env.CONTACTO_TO;
-  if (!apiKey || !to) {
+  if (!apiKey) {
     return res.status(500).json({
       ok: false,
       error: "El servicio de correo no está configurado.",
@@ -143,7 +156,7 @@ module.exports = async function handler(req, res) {
       },
       body: JSON.stringify({
         from: FROM,
-        to: [to],
+        to: TO,
         reply_to: email,
         subject: SUBJECT,
         html: html,

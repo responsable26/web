@@ -85,11 +85,18 @@
     );
     if (!buttons.length) return;
 
-    function toggleItem(btn) {
-      var expanded = btn.getAttribute("aria-expanded") === "true";
+    function setOpen(btn, open) {
       var panel = document.getElementById(btn.getAttribute("aria-controls"));
-      btn.setAttribute("aria-expanded", String(!expanded));
-      if (panel) panel.hidden = expanded; // oculta cuando pasaba a cerrado
+      btn.setAttribute("aria-expanded", String(open));
+      if (panel) panel.hidden = !open;
+    }
+
+    function toggleItem(btn) {
+      var willOpen = btn.getAttribute("aria-expanded") !== "true";
+      // Acordeón exclusivo: cierra todas y abre solo la clicada (si iba a abrirse).
+      buttons.forEach(function (other) {
+        setOpen(other, other === btn && willOpen);
+      });
     }
 
     buttons.forEach(function (btn, index) {
