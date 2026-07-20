@@ -334,7 +334,104 @@
     }
   }
 
-  /* ---------- 4. Alto del header como variable CSS (--header-h) ---------- */
+  /* ---------- 4. Carrusel de beneficios ---------- */
+  function initCarousels() {
+    var carousels = Array.prototype.slice.call(
+      document.querySelectorAll("[data-carousel]")
+    );
+    if (!carousels.length) return;
+
+    carousels.forEach(function (root) {
+      var viewport = root.querySelector("[data-carousel-viewport]");
+      var track = root.querySelector("[data-carousel-track]");
+      var prev = root.querySelector("[data-carousel-prev]");
+      var next = root.querySelector("[data-carousel-next]");
+      if (!viewport || !track) return;
+
+      var slides = Array.prototype.slice.call(track.children);
+      if (!slides.length) return;
+
+      var AUTOPLAY_MS = 4000;
+      var index = 0;
+      var timer = null;
+
+      // Mide el ancho real de una tarjeta + el gap para calcular el paso y el
+      // índice máximo (cuántas tarjetas quedan visibles según el ancho actual).
+      function metrics() {
+        var slideW = slides[0].getBoundingClientRect().width;
+        var cs = getComputedStyle(track);
+        var gap = parseFloat(cs.columnGap || cs.gap || "0") || 0;
+        var step = slideW + gap;
+        var viewW = viewport.getBoundingClientRect().width;
+        var visible = step > 0 ? Math.max(1, Math.round((viewW + gap) / step)) : 1;
+        var maxIndex = Math.max(0, slides.length - visible);
+        return { step: step, maxIndex: maxIndex };
+      }
+
+      function update() {
+        var m = metrics();
+        if (index > m.maxIndex) index = m.maxIndex;
+        if (index < 0) index = 0;
+        track.style.transform = "translateX(" + (-index * m.step) + "px)";
+        if (prev) prev.disabled = index <= 0;
+        if (next) next.disabled = index >= m.maxIndex;
+      }
+
+      // Avanza una tarjeta; al llegar al final vuelve al inicio (loop).
+      function advance() {
+        var maxIndex = metrics().maxIndex;
+        index = index >= maxIndex ? 0 : index + 1;
+        update();
+      }
+
+      function startAutoplay() {
+        if (timer || metrics().maxIndex === 0) return; // nada que recorrer
+        timer = window.setInterval(advance, AUTOPLAY_MS);
+      }
+      function stopAutoplay() {
+        if (timer) {
+          window.clearInterval(timer);
+          timer = null;
+        }
+      }
+      // Reinicia el temporizador tras una acción manual (si el autoplay está activo).
+      function restartAutoplay() {
+        if (timer) {
+          stopAutoplay();
+          startAutoplay();
+        }
+      }
+
+      if (prev) {
+        prev.addEventListener("click", function () {
+          index -= 1;
+          update();
+          restartAutoplay();
+        });
+      }
+      if (next) {
+        next.addEventListener("click", function () {
+          index += 1;
+          update();
+          restartAutoplay();
+        });
+      }
+
+      // Pausa el autoplay mientras el mouse está sobre el carrusel.
+      root.addEventListener("mouseenter", stopAutoplay);
+      root.addEventListener("mouseleave", startAutoplay);
+      // Pausa también con foco de teclado (accesibilidad).
+      root.addEventListener("focusin", stopAutoplay);
+      root.addEventListener("focusout", startAutoplay);
+
+      window.addEventListener("resize", update);
+      window.addEventListener("load", update); // reajusta cuando cargan las fuentes
+      update();
+      startAutoplay();
+    });
+  }
+
+  /* ---------- 5. Alto del header como variable CSS (--header-h) ---------- */
   // El hero usa esta medida para abarcar la pantalla sin sobrepasarse.
   // El header no es sticky y en móvil ocupa dos filas, por eso se mide en vivo.
   function initHeaderHeightVar() {
@@ -355,6 +452,7 @@
     initGlobalMenu();
     initFaq();
     initContactModal();
+    initCarousels();
   }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);

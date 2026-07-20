@@ -606,8 +606,9 @@ main section[id] { scroll-margin-top: 90px; }
 
 /* ---------- 14. Cambios que habilita (grid "de X → a Y") ---------- */
 /* Bloque interior de la sección "Temas materiales claros": separado del
-   bloque de dos columnas de arriba, a todo el ancho de la sección. */
-.shift { margin-top: clamp(2.5rem, 5vw, 4rem); }
+   bloque de dos columnas de arriba, a todo el ancho de la sección.
+   Separación compacta pero con aire respecto al div superior. */
+.shift { margin-top: clamp(1.5rem, 3vw, 2.25rem); }
 .shift__title { margin: 0; }
 .shift-grid {
   display: grid;
@@ -657,6 +658,83 @@ main section[id] { scroll-margin-top: 90px; }
   line-height: 1.3;
   margin: 0;
 }
+
+/* ---------- 14b. Carrusel de beneficios ----------
+   Namespace propio ".bcar" para NO chocar con el componente genérico
+   ".carousel" de la home (que aplica overflow:hidden y scale en hover). */
+.bcar__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  /* .shift ya aporta la separación superior; sin margen extra aquí */
+  margin-top: 0;
+}
+.bcar__title { margin: 0; }
+/* Padding para que los botones no se recorten al crecer en hover */
+.bcar__nav { display: flex; gap: 0.6rem; flex-shrink: 0; padding: 4px; }
+/* Botón circular rosa/navy, coherente con el resto del sitio */
+.bcar__btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid var(--navy);
+  background: var(--white);
+  color: var(--navy);
+  font-family: var(--font-head);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
+}
+/* Crece un poco al pasar el mouse; el padding del contenedor evita el recorte */
+.bcar__btn:hover:not(:disabled) {
+  background: var(--magenta);
+  border-color: var(--magenta);
+  color: var(--white);
+  transform: scale(1.08);
+}
+.bcar__btn:focus-visible { outline: 2px solid var(--magenta); outline-offset: 2px; }
+.bcar__btn:disabled { opacity: 0.35; cursor: default; }
+
+.bcar__viewport {
+  overflow: hidden;
+  margin-top: 1.5rem;
+}
+.bcar__track {
+  --visible: 3;
+  --carousel-gap: 1.5rem;
+  display: flex;
+  gap: var(--carousel-gap);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
+}
+.bcar__slide {
+  flex: 0 0 calc((100% - (var(--visible) - 1) * var(--carousel-gap)) / var(--visible));
+  max-width: calc((100% - (var(--visible) - 1) * var(--carousel-gap)) / var(--visible));
+}
+@media (max-width: 900px) { .bcar__track { --visible: 2; } }
+@media (max-width: 560px) { .bcar__track { --visible: 1; } }
+
+/* Tarjetas del carrusel: fondo navy con texto claro, misma estructura.
+   Sin sombra: el navy sobre el gris claro ya se distingue, y evita la
+   banda de sombra recortada por el overflow:hidden del viewport. */
+.bcar__slide .shift-card {
+  height: 100%;
+  background: var(--navy);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: none;
+}
+/* El número y la flecha ya son rosa por defecto (.shift-card__num / __arrow) */
+.bcar__slide .shift-card__from { color: rgba(255, 255, 255, 0.6); }
+.bcar__slide .shift-card__to { color: var(--white); }
 
 /* ---------- 15. Footer ---------- */
 .site-footer {
@@ -736,7 +814,10 @@ main section[id] { scroll-margin-top: 90px; }
   height: auto;
   margin-inline: auto;
   border-radius: 0;
+  /* Debe verse PLANA: sin sombra de caja ni filtro drop-shadow.
+     (La sombra que aparecía en producción era CSS cacheado antiguo, no del SVG.) */
   box-shadow: none;
+  filter: none;
 }
 
 /* ---------- 20. Modal de contacto ---------- */

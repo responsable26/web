@@ -1,5 +1,0 @@
-# Dependencias y artefactos de las pruebas (no se versionan)
-node_modules/
-package-lock.json
-modal-desktop.png
-modal-mobile.png
