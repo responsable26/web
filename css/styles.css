@@ -547,6 +547,23 @@ main section[id] { scroll-margin-top: 90px; }
   margin: 0;
   color: var(--ink-soft);
 }
+.faq__list {
+  padding: 0 1.35rem 1.25rem 2.6rem;
+  margin: 0;
+  color: var(--ink-soft);
+  list-style: disc;
+}
+.faq__list li {
+  margin: 0;
+  padding-left: 0.35rem;
+}
+.faq__list li + li {
+  margin-top: 0.5rem;
+}
+.faq__list li::marker {
+  color: var(--ink-soft);
+  font-size: 0.85em;
+}
 
 /* ---------- 12. Banda CTA (tarjeta rosa) ---------- */
 /* Tarjeta rosa con aire lateral y esquinas redondeadas, coherente con el hero.
